@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Department {
+  id              Int              @id @default(autoincrement())
+  name            String
+  description     String?
+  head            String?
+  dateCreated     DateTime         @default(now())
+  employees       Employee[]
+  departmentLists DepartmentList[]
+
+  @@map("departments")
+}
+
+model Employee {
+  id           Int      @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  position     String
+  departmentId Int?
+  dateAdded    DateTime @default(now())
+
+  department Department? @relation(fields: [departmentId], references: [id])
+
+  @@map("employees")
+}
+
+model Dashboard {
+  id              Int   @id @default(autoincrement())
+  topDepartments  Int[]
+  recentEmployees Int[]
+
+  @@map("dashboard")
+}
+
+model DepartmentList {
+  id           Int      @id @default(autoincrement())
+  departmentId Int
+  dateCreated  DateTime @default(now())
+
+  department Department @relation(fields: [departmentId], references: [id])
+
+  @@map("department_list")
+}
